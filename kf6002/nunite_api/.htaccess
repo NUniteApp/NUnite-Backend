@@ -1,0 +1,6 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php
+ErrorDocument 500 /kf6002/nunite_api/error/
+ErrorDocument 403 /kf6002/nunite_api/error/
