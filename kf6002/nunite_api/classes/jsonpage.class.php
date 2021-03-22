@@ -53,32 +53,45 @@ class JSONpage {
 
 
 
-    private function json_login() {
-        $msg = "Invalid request. Username and password required";
+    private function json_login()
+    {
+        $msg = "Invalid Request. Username and Password Required";
         $status = 400;
         $token = null;
         $input = json_decode(file_get_contents("php://input"));
+        $admin = "";
 
         if ($input) {
 
             if (isset($input->email) && isset($input->password)) {
-                $query  = "SELECT firstname, lastname, password FROM users WHERE email LIKE :email";
+                $query = "SELECT username, password FROM users WHERE email LIKE :email";
                 $params = ["email" => $input->email];
-                $res = json_decode($this->recordset->getJSONRecordSet($query, $params),true);
+                $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
 
                 if (password_verify($input->password, $password)) {
-                    $msg = "User authorised. Welcome ". $res['data'][0]['firstname'] . " " . $res['data'][0]['lastname'];
+                    $msg = "User Authorised. Welcome " . $res['data'][0]['username'];
                     $status = 200;
-                    $token = "1234";
+                    $admin = "true";
+
+                    $token = array();
+                    $token['email'] = $input->email;
+                    $token['username'] = $res['data'][0]['username'];
+                    $token['iat'] = time();
+                    $token['exp'] = time() + (60 + 60);
+
+                    $jwtkey = JWTKEY;
+                    $token = \Firebase\JWT\JWT::encode($token, $jwtkey);
+
                 } else {
-                    $msg = "username or password are invalid";
+                    $msg = "Username or Password is invalid";
                     $status = 401;
+                    $admin = "null";
                 }
             }
         }
 
-        return json_encode(array("status" => $status, "message" => $msg, "token" => $token));
+        return json_encode(array("status" => $status, "message" => $msg, "token" => $token, "adminStatus" => $admin));
     }
 
 
