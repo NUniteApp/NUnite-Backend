@@ -17,7 +17,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
   <component name="ProjectId" id="1nRx16o2Y2dqMbdFxNV6bwa2WNA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -58,10 +62,26 @@
       <workItem from="1611611661989" duration="1206000" />
       <workItem from="1611614074489" duration="573000" />
       <workItem from="1616392029246" duration="320000" />
+      <workItem from="1616677882045" duration="1247000" />
+      <workItem from="1618754630979" duration="1001000" />
+      <workItem from="1618757050631" duration="2399000" />
+      <workItem from="1618763013530" duration="1796000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

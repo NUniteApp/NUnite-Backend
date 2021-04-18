@@ -20,8 +20,11 @@ class JSONpage {
             case 'api':
                 $this->page = $this->json_welcome();
                 break;
-            case 'login';
+            case 'login':
                 $this->page =$this->json_login();
+                break;
+            case 'register':
+                $this->page =$this->json_register();
                 break;
             default:
                 $this->page = $this->json_error();
@@ -42,7 +45,7 @@ class JSONpage {
         return $this->page;
     }
     private function json_welcome() {
-        $msg = array("message"=>"welcome", "user"=>"John smith");
+        $msg = array("message"=>"welcome", "user"=>"helllo111  smith");
         return json_encode($msg);
     }
 
@@ -55,7 +58,7 @@ class JSONpage {
 
     private function json_login()
     {
-        $msg = "Invalid Request. Username and Password Required";
+        $msg = "Invalid Request. email and Password Required";
         $status = 400;
         $token = null;
         $input = json_decode(file_get_contents("php://input"));
@@ -63,20 +66,20 @@ class JSONpage {
 
         if ($input) {
 
-            if (isset($input->email) && isset($input->password)) {
-                $query = "SELECT username, password FROM users WHERE email LIKE :email";
-                $params = ["email" => $input->email];
+
+            if (isset($input->user_email) && isset($input->password)) {
+                $query = "SELECT user_email, password FROM Users WHERE user_email LIKE :user_email";
+                $params = ["user_email" => $input->user_email];
                 $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
-
                 if (password_verify($input->password, $password)) {
                     $msg = "User Authorised. Welcome " . $res['data'][0]['username'];
                     $status = 200;
                     $admin = "true";
 
                     $token = array();
-                    $token['email'] = $input->email;
-                    $token['username'] = $res['data'][0]['username'];
+                    $token['user_email'] = $input->user_email;
+                    $token['user_email'] = $res['data'][0]['user_email'];
                     $token['iat'] = time();
                     $token['exp'] = time() + (60 + 60);
 
@@ -84,7 +87,7 @@ class JSONpage {
                     $token = \Firebase\JWT\JWT::encode($token, $jwtkey);
 
                 } else {
-                    $msg = "Username or Password is invalid";
+                    $msg = "email or Password is invalid";
                     $status = 401;
                     $admin = "null";
                 }
