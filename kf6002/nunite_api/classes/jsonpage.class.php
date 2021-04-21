@@ -29,8 +29,14 @@ class JSONpage {
             case 'posts':
                 $this->page =$this->json_posts();
                 break;
+            case 'create_posts':
+                $this->page =$this->json_create_posts();
+                break;
             case 'userprofile':
                 $this->page =$this->json_userprofile();
+                break;
+            case 'delete_post':
+                $this->page =$this->json_delete_posts();
                 break;
             default:
                 $this->page = $this->json_error();
@@ -159,31 +165,35 @@ class JSONpage {
     private function json_create_posts()
     {
 
-        // First get the inputs 
+        // First get the inputs
 
-        // Second get the last post id 
+        $input = json_decode(file_get_contents("php://input"));
+        $post= $input->user_email;
+        $post_title= $input->user_email;
+        $post_description= $input->user_email;
 
-        // Third create the folders 
+        // Scond get the lastpost id
+        $query= "SELECT post_id FROM Post ORDER BY post_id DESC LIMIT 1;";
+
+
+
+
+
+
+        // Third create the folders
 
         // Fourth is to insert into posts table
 
-
-        $query = " ";
-        $params = [];
-
-
-        $res['status'] = 200;
-        $res['message'] = "ok";
-        $res['next_page'] = $nextpage;
         return json_encode($res);
     }
 
 
 
 
+
     private function json_userprofile()
     {
-        $query = "SELECT * FROM UserProfile";
+        $query = "SELECT * FROM UserProfile;";
         $params = [];
 
         $nextpage = null;
@@ -196,6 +206,25 @@ class JSONpage {
         $res['next_page'] = $nextpage;
         return json_encode($res);
     }
+
+    private function json_delete_posts()
+    {
+        $input = json_decode(file_get_contents("php://input"));
+        $post_id = $input->post_id;
+        $query = "Delete from post where post_id = :postid ";
+        $deleted = [":post_id" => $post_id ] ;
+
+
+
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $deleted), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        return json_encode($res);
+    }
+
 
 
 
