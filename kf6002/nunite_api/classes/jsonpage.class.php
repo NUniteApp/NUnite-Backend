@@ -155,6 +155,32 @@ class JSONpage {
         $res['next_page'] = $nextpage;
         return json_encode($res);
     }
+
+    private function json_create_posts()
+    {
+
+        // First get the inputs 
+
+        // Second get the last post id 
+
+        // Third create the folders 
+
+        // Fourth is to insert into posts table
+
+
+        $query = " ";
+        $params = [];
+
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+
+
+
     private function json_userprofile()
     {
         $query = "SELECT * FROM UserProfile";
