@@ -23,8 +23,14 @@ class JSONpage {
             case 'login':
                 $this->page =$this->json_login();
                 break;
-            case 'register':
-                $this->page =$this->json_register();
+            case 'registration':
+                $this->page =$this->json_registration();
+                break;
+            case 'posts':
+                $this->page =$this->json_posts();
+                break;
+            case 'userprofile':
+                $this->page =$this->json_userprofile();
                 break;
             default:
                 $this->page = $this->json_error();
@@ -96,9 +102,65 @@ class JSONpage {
 
         return json_encode(array("status" => $status, "message" => $msg, "token" => $token, "adminStatus" => $admin));
     }
+    private function json_registration(){
 
+
+
+        $input = json_decode(file_get_contents("php://input"));
+
+        $user_email = $input->user_email ;
+        $username = $input->username;
+        $password =  $input->password;
+
+
+        $query = "INSERT INTO (user_email,username,password) Users values (:user_email,:username,:password)";
+        $params = [ ":user_name" => $user_email,":username"=> $username,":password" => $password];
+
+        ////= null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+       //  $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+
+    private function json_posts()
+    {
+        $query = "SELECT * FROM post";
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+    private function json_userprofile()
+    {
+        $query = "SELECT * FROM UserProfile";
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
 
 
 
 }
+
 ?>
