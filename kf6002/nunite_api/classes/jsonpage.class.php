@@ -168,18 +168,51 @@ class JSONpage {
         // First get the inputs
 
         $input = json_decode(file_get_contents("php://input"));
-        $post= $input->user_email;
-        $post_title= $input->user_email;
-        $post_description= $input->user_email;
+        $post_file = $_FILES['postimage']['name'];
+        // $post_file = $_FILES['postimage']['tmp_name'];
+        $post_title = $_POST['post_title'];
+        $post_description = $_POST['post_description'];
+        $post_user_id = $_POST['post_user_id'];
 
-        // Scond get the lastpost id
+        // Second get the last post id
         $query= "SELECT post_id FROM Post ORDER BY post_id DESC LIMIT 1;";
+        $params = [];
+        $resLastPostId = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+        $currentPostId = $resLastPostId['data']['0']['post_id'] + 1 ; 
+
+        // Create the uploads directory 
+        $uploadsDirectory = dirname(__FILE__, 2) . "\uploads"; 
+        $userDirectory = $uploadsDirectory . "\\" . $post_user_id;
+        $postDirectory = $userDirectory . "\\" . $currentPostId;
+        
+
+        if(!file_exists($postDirectory) ){
+            mkdir($postDirectory, 0777, true);
+        }
+        
+
+        $path = pathinfo($post_file);
+        $filename = $path['filename'];
+        $ext = $path['extension'];
+        $temp_name = $_FILES['postimage']['tmp_name'];
+        $path_filename_ext = $postDirectory ."\\".$filename.".".$ext;
+        if (file_exists($path_filename_ext)) {
+            // echo "Sorry, file already exists.";
+        }else{
+            move_uploaded_file($temp_name , $path_filename_ext);
+           // echo "Congratulations! File Uploaded Successfully.";
+        }
 
 
 
 
 
 
+        $res['status'] = 200;
+        $res['filename'] = $post_file;
+        $res['dirname'] = dirname(__FILE__, 2);
+        $res['lastPostId'] = $resLastPostId;
+        $res['postDirectory'] = $postDirectory;    
         // Third create the folders
 
         // Fourth is to insert into posts table
