@@ -79,7 +79,7 @@ class JSONpage {
                 $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
                 if (password_verify($input->password, $password)) {
-                    $msg = "User Authorised. Welcome " . $res['data'][0]['username'];
+                    $msg = "User Authorised. Welcome " . $res['data'][0]['user_email'];
                     $status = 200;
                     $admin = "true";
 
@@ -104,27 +104,39 @@ class JSONpage {
     }
     private function json_registration(){
 
-
-
         $input = json_decode(file_get_contents("php://input"));
 
-        $user_email = $input->user_email ;
+        $user_email = $input->user_email;
         $username = $input->username;
         $password =  $input->password;
+        
+        // Check if the email exists in the database
+        $emailCheckQuery = "SELECT * FROM Users WHERE user_email = :user_email;";
+        $checkQueryParams = [":user_email" => $user_email ] ;
+
+        $resEmail = json_decode($this->recordset->getJSONRecordSet($emailCheckQuery, $checkQueryParams), true);
+
+        if(isset($resEmail['data'][0]['user_email']) ){
+            $res['status'] = 200;
+            $res['message'] = "User email exists already";
+    
+        } else {
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            $query = "INSERT INTO Users (user_email, username, password )  Values (:user_email,:username,:password); ";
+            $params = [ ":user_email" => $user_email,":username"=> $username,":password" => $password_hash];
+            
+            // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+            $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+    
+            $res['status'] = 200;
+            $res['message'] = "ok";
+        }
 
 
-        $query = "INSERT INTO (user_email,username,password) Users values (:user_email,:username,:password)";
-        $params = [ ":user_name" => $user_email,":username"=> $username,":password" => $password];
 
-        ////= null;
-
-        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
-        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
-
-        $res['status'] = 200;
-        $res['message'] = "ok";
-       //  $res['next_page'] = $nextpage;
         return json_encode($res);
+
     }
 
 
