@@ -35,6 +35,10 @@ class JSONpage {
             case 'userprofile':
                 $this->page =$this->json_userprofile();
                 break;
+            case 'username': 
+                $this->page =$this->json_username();
+                break;
+
             case 'delete_post':
                 $this->page =$this->json_delete_posts();
                 break;
@@ -80,7 +84,7 @@ class JSONpage {
 
 
             if (isset($input->user_email) && isset($input->password)) {
-                $query = "SELECT user_email, password FROM Users WHERE user_email LIKE :user_email";
+                $query = "SELECT user_id, username, user_email, password FROM Users WHERE user_email LIKE :user_email";
                 $params = ["user_email" => $input->user_email];
                 $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
                 $password = ($res['count']) ? $res['data'][0]['password'] : null;
@@ -92,6 +96,8 @@ class JSONpage {
                     $token = array();
                     $token['user_email'] = $input->user_email;
                     $token['user_email'] = $res['data'][0]['user_email'];
+                    $token['user_id'] = $res['data'][0]['user_id'];
+                    $token['username'] = $res['data'][0]['username'];
                     $token['iat'] = time();
                     $token['exp'] = time() + (60 + 60);
 
@@ -166,12 +172,12 @@ class JSONpage {
     {
 
         // First get the inputs
-
         $input = json_decode(file_get_contents("php://input"));
         $post_file = $_FILES['postimage']['name'];
         // $post_file = $_FILES['postimage']['tmp_name'];
         $post_title = $_POST['post_title'];
         $post_description = $_POST['post_description'];
+        $post_type = $_POST['post_type'];
         $post_user_id = $_POST['post_user_id'];
 
         // Second get the last post id
@@ -202,8 +208,23 @@ class JSONpage {
             move_uploaded_file($temp_name , $path_filename_ext);
            // echo "Congratulations! File Uploaded Successfully.";
         }
+        $post_image_url = "uploads/" . $post_user_id . "/" . $currentPostId . "/". $_FILES['postimage']['name'] ;
 
 
+        $createPostQuery = "INSERT INTO Post (post_title, post_image_url, post_type, post_description, user_id) VALUES (:post_title,
+        :post_image_url, :post_type, :post_description, :user_id );"; 
+
+
+        $createPostParams = 
+        [
+            ":post_title" =>  $post_title,
+            ":post_image_url"=> $post_image_url,
+            ":post_type" => $post_type,
+            ":post_description" => $post_description, 
+            ":user_id" => $post_user_id 
+        ];
+
+        $resCreatePost = json_decode($this->recordset->getJSONRecordSet($createPostQuery , $createPostParams ), true);
 
 
 
@@ -220,7 +241,23 @@ class JSONpage {
         return json_encode($res);
     }
 
+    private function json_username() {
+        $input = json_decode(file_get_contents("php://input"));
 
+        $user_id = $input->user_id;
+
+        $userNameQuery = "SELECT * FROM Users WHERE user_id = :user_id;";
+        $userNameParams = [":user_id" => $user_id ] ;
+
+        $resUserName = json_decode($this->recordset->getJSONRecordSet($userNameQuery, $userNameParams), true);
+
+        $userName = $resUserName['data'][0]['username'];
+
+        $res['status'] = 200;
+        $res['username'] = $userName;
+
+        return json_encode($res);
+    }
 
 
 
