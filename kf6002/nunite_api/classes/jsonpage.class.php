@@ -39,16 +39,28 @@ class JSONpage {
                 $this->page =$this->json_username();
                 break;
 
+            //Admin Panel Endpoints
+            case 'admin_users':
+                $this->page =$this->json_admin_users();
+                break;
+            case 'admin_posts':
+                $this->page =$this->json_admin_posts();
+                break;
+            case 'admin_sponsors':
+                $this->page =$this->json_admin_sponsors();
+                break;
+            case 'admin_contact_requests':
+                $this->page =$this->json_admin_contact_requests();
+                break;
             case 'delete_post':
                 $this->page =$this->json_delete_posts();
                 break;
+
             default:
                 $this->page = $this->json_error();
                 break;
         }
     }
-
-    // Testing Rajan 123 456
 
 //an arbitrary max length of 20 is set
     private function sanitiseString($x) {
@@ -63,7 +75,7 @@ class JSONpage {
         return $this->page;
     }
     private function json_welcome() {
-        $msg = array("message"=>"welcome", "user"=>"helllo111  smith");
+        $msg = array("message"=>"welcome", "user"=>"NUnite Backend");
         return json_encode($msg);
     }
 
@@ -71,8 +83,6 @@ class JSONpage {
         $msg = array("message"=>"error");
         return json_encode($msg);
     }
-
-
 
     private function json_login()
     {
@@ -83,7 +93,6 @@ class JSONpage {
         $admin = "";
 
         if ($input) {
-
 
             if (isset($input->user_email) && isset($input->password)) {
                 $query = "SELECT user_id, username, user_email, password FROM Users WHERE user_email LIKE :user_email";
@@ -116,6 +125,7 @@ class JSONpage {
 
         return json_encode(array("status" => $status, "message" => $msg, "token" => $token, "adminStatus" => $admin));
     }
+
     private function json_registration(){
 
         $input = json_decode(file_get_contents("php://input"));
@@ -147,12 +157,9 @@ class JSONpage {
             $res['message'] = "ok";
         }
 
-
-
         return json_encode($res);
 
     }
-
 
     private function json_posts()
     {
@@ -261,11 +268,89 @@ class JSONpage {
         return json_encode($res);
     }
 
-
-
     private function json_userprofile()
     {
         $query = "SELECT * FROM UserProfile;";
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+    //Admin Panel Endpoints
+    //Admin Panel Endpoints
+    //Admin Panel Endpoints
+    //Admin Panel Endpoints
+    //Admin Panel Endpoints
+    //Admin Panel Endpoints
+
+    private function json_admin_users()
+    {
+        $query = "SELECT Users.user_id, UserProfile.firstname, UserProfile.lastname, Users.username, Users.user_email 
+                  FROM Users
+                  JOIN UserProfile on (Users.user_id = UserProfile.user_id);";
+
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+    private function json_admin_posts()
+    {
+        $query = "SELECT Users.user_id, Users.username, Post.post_id, Post.post_title, Post.post_date 
+                  FROM Post
+                  JOIN Users on (Post.user_id = Users.user_id);";
+
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+    private function json_admin_sponsors()
+    {
+        $query = "SELECT Sponsorships.sponsor_id, Sponsorships.sponsor_title, Sponsorships.sponsor_text
+                      FROM Sponsorships;";
+        $params = [];
+
+        $nextpage = null;
+
+        // This decodes the JSON encoded by getJSONRecordSet() from an associative array
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $params), true);
+
+        $res['status'] = 200;
+        $res['message'] = "ok";
+        $res['next_page'] = $nextpage;
+        return json_encode($res);
+    }
+
+    private function json_admin_contact_requests()
+    {
+        $query = "SELECT ContactForm.contact_id, Users.username, Users.user_email, ContactForm.contact_text
+                  FROM ContactForm
+                  JOIN Users on (ContactForm.user_id = Users.user_id);";
         $params = [];
 
         $nextpage = null;
@@ -283,7 +368,7 @@ class JSONpage {
     {
         $input = json_decode(file_get_contents("php://input"));
         $post_id = $input->post_id;
-        $query = "Delete from post where post_id = :postid ";
+        $query = "Delete from post where post_id = :post_id ";
         $deleted = [":post_id" => $post_id ] ;
 
 
@@ -296,6 +381,8 @@ class JSONpage {
         $res['message'] = "ok";
         return json_encode($res);
     }
+
+
 
 
 
