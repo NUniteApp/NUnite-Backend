@@ -348,7 +348,7 @@ class JSONpage {
 
     private function json_admin_contact_requests()
     {
-        $query = "SELECT ContactForm.contact_id, Users.username, Users.user_email, ContactForm.contact_text
+        $query = "SELECT ContactForm.contact_id, Users.username, Users.user_email, ContactForm.contact_title, ContactForm.contact_text
                   FROM ContactForm
                   JOIN Users on (ContactForm.user_id = Users.user_id);";
         $params = [];
