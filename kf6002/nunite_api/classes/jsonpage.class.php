@@ -368,7 +368,6 @@ class JSONpage {
     {
         $input = json_decode(file_get_contents("php://input"));
         $post_id = $input->post_id;
-        $query = "Delete from post where post_id = :post_id ";
         $deleted = [":post_id" => $post_id ] ;
 
 
