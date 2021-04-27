@@ -10,10 +10,17 @@ class JSONRecordSet extends RecordSet {
      * @param $params  associative array of params for preparted statement
      * @return string  a json documnent
      */
-    function getJSONRecordSet($query, $params = null) {
+    function getJSONRecordSet($query, $params = null, $type = null) {
         $stmt = $this->getRecordSet($query, $params);
-        $recordSet = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $nRecords = count($recordSet);
+        if(!isset($type) ) {
+            $recordSet = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $nRecords = count($recordSet);
+        } 
+        if(isset($type) && $type === 'DELETE') {
+           $recordSet = $stmt->rowCount();
+           $nRecords =  $stmt->rowCount();
+        }
+
         return json_encode(array("count"=>$nRecords, "data"=>$recordSet));
     }
 }

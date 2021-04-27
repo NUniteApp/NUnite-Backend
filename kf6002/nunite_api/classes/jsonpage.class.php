@@ -281,14 +281,14 @@ class JSONpage {
     {
         $input = json_decode(file_get_contents("php://input"));
         $post_id = $input->post_id;
-        $query = "Delete from post where post_id = :postid ";
+        $query = "DELETE FROM Post WHERE post_id = :post_id ";
         $deleted = [":post_id" => $post_id ] ;
 
 
 
 
         // This decodes the JSON encoded by getJSONRecordSet() from an associative array
-        $res = json_decode($this->recordset->getJSONRecordSet($query, $deleted), true);
+        $res = json_decode($this->recordset->getJSONRecordSet($query, $deleted, 'DELETE' ), true);
 
         $res['status'] = 200;
         $res['message'] = "ok";
