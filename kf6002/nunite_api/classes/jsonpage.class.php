@@ -263,6 +263,11 @@ class JSONpage {
 
     private function json_userprofile()
     {
+
+        $query = "SELECT ContactForm.contact_id, Users.username, Users.user_email, ContactForm.contact_title, ContactForm.contact_text
+                  FROM ContactForm
+                  JOIN Users on (ContactForm.user_id = Users.user_id);";
+
         $query = "SELECT * FROM UserProfile;";
         $params = [];
 
@@ -281,11 +286,10 @@ class JSONpage {
     {
         $input = json_decode(file_get_contents("php://input"));
         $post_id = $input->post_id;
+
         $query = "DELETE FROM Post WHERE post_id = :post_id ";
+
         $deleted = [":post_id" => $post_id ] ;
-
-
-
 
         // This decodes the JSON encoded by getJSONRecordSet() from an associative array
         $res = json_decode($this->recordset->getJSONRecordSet($query, $deleted, 'DELETE' ), true);
