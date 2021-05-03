@@ -1,6 +1,5 @@
 
-
-			                                                         		How to run the backend
+How to run the backend
 
 1.To Actually use the backend you need to upload the file into a local host web server for example using xammp server
 2. You may need to change the base path in the in config/ config.ini yourbasepath/assessment-assessment-backend/
